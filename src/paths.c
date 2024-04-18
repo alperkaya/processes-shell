@@ -4,9 +4,12 @@
 #include <unistd.h> 
 
 #include "utils.h"
+#include "commands.h"
 
 char **path = NULL;
 int num_path = 0;
+char DEFAULT_PATH[6] = "/bin/";
+
 
 // PATH
 // if a command cant found in search paths, throw an error
@@ -35,14 +38,19 @@ void setSearchPath(char *path_list)
     freePaths();
 
     while ((arg = strsep(&path_list, " ")) != NULL)
+    //while ((arg = stringSep(&path_list, " ")) != NULL)
     {
         trimNewline(arg);
+        
+        // increase num of path
+        path = (char **) realloc(path, (num_path + 1) * sizeof(char *));
 
-        printf("debug: %s\n", arg);
-
-        path = (char **)realloc(path, (num_path + 1) * sizeof(char *));
-        path[num_path] = malloc(strlen(arg) + 1);
+        path[num_path] = malloc(strlen(arg) + 1 + slashExistAtEnd(arg));
         strcpy(path[num_path], arg);
+
+        if(slashExistAtEnd(arg) == 0){
+            addSlashToEnd(&path[num_path]);
+        }
 
         num_path++;
     }
@@ -72,24 +80,29 @@ int appendPath(char *cmd, char **exec_cmd)
     int i = 0;
     for (; i < num_path; i++)
     {
-        char cmd_path[255];
-        sprintf(cmd_path, "%s%s", path[i], cmd);
-        if (access(cmd_path, X_OK) == 0)
+        char cmd_full_path[255];
+        sprintf(cmd_full_path, "%s%s", path[i], cmd);
+        if (access(cmd_full_path, X_OK) == 0)
         {
             // append path to cmd
             // str1 = path
             // str2 = cmd
             // str2 = path+cmd
             // return str2
-            if ((*exec_cmd = strdup(cmd_path)) != NULL)
+            if ((*exec_cmd = strdup(cmd_full_path)) != NULL)
             {
+                //printf("path: %s,%d\n", *exec_cmd, i);  
                 return 0;
             }
         }
-        // printf("path: %s,%d\n", cmd_path, r);
     }
 
     fprintf(stderr, "An error has occurred\n");
 
     return -1;
+}
+
+
+void commandPath(char *input){
+    setSearchPath(input);
 }

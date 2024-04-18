@@ -1,15 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h> //stcmp
-#include <unistd.h> // access, execv
+#include <string.h>
 
-#include "utils.h"
 #include "commands.h"
 #include "paths.h"
 
-
-
 static FILE *input_stream = NULL;
+extern char DEFAULT_PATH;
 
 static void cleanup()
 {
@@ -21,6 +18,7 @@ static void cleanup()
     {
         fclose(input_stream);
     }
+
 }
 
 static void process(FILE *input_stream)
@@ -30,14 +28,18 @@ static void process(FILE *input_stream)
 
     while (1)
     {
-        fprintf(stdout, "./wish> ");
-        getline(&buffer, &len, input_stream);
+        if(input_stream == stdin)
+            fprintf(stdout, "./wish> ");
+        
+        if(getline(&buffer, &len, input_stream) == -1){
+            break;
+        }
 
         if (strcmp(buffer, "exit\n") == 0)
         {
             break;
         }
-
+        
         char *dup = strdup(buffer);
         setCommand(dup);
         free(dup);
@@ -48,10 +50,12 @@ static void process(FILE *input_stream)
 
 int main(int argc, char *argv[])
 {
-
     atexit(cleanup);
 
     input_stream = stdin;
+    // default path is /bin/
+    setSearchPath(&DEFAULT_PATH);
+
     if (argc == 2)
     {
         input_stream = fopen(argv[1], "r");

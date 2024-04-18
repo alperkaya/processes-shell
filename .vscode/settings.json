@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "utils.h": "c",
+        "stdlib.h": "c",
+        "commands.h": "c",
+        "unistd.h": "c",
+        "stdio.h": "c",
+        "errno.h": "c",
+        "wait.h": "c",
+        "string.h": "c",
+        "paths.h": "c"
+    }
+}

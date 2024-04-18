@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+
 #include "utils.h"
 
 void printPaths(char **path, int num_path){
@@ -12,9 +13,30 @@ void printPaths(char **path, int num_path){
 
 void trimNewline(char *str)
 {
-    size_t len = strlen(str);
-    if (len > 0 && str[len - 1] == '\n')
-    {
-        str[len - 1] = '\0';
+    if(str != NULL){
+        size_t len = strlen(str);
+        if (len > 0 && str[len - 1] == '\n')
+        {
+            str[len - 1] = '\0';
+        }
     }
+}
+
+int slashExistAtEnd(char *str){
+    if(str[strlen(str) - 1] == '/'){
+        return 1;
+    }
+
+    return 0;
+}
+
+void addSlashToEnd(char **str){
+    // add / at the end if user didnt provide
+    char *destination = *str;
+    // Step 2: Calculate the length of the copied string
+    size_t length = strlen(*str);
+    // Step 3: Append the character at the end
+    destination[length] = '/';        
+    // Step 4: Null-terminate the string
+    destination[length + 1] = '\0';
 }
