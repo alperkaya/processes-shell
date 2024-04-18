@@ -52,13 +52,13 @@ static void forkCommand(char **cmd_args)
 
         // cleanup cmd and arguments
         int i = 0;
-        for (; i < 10; i++)
+        for (; i < num_args; i++)
         {
             free(cmd_args[i]);
         }
 
         num_args = 0;
-
+        user_stdout = NULL;
     }
 }
 

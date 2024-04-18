@@ -4,6 +4,7 @@
 
 #include "commands.h"
 #include "paths.h"
+#include "utils.h"
 
 static FILE *input_stream = NULL;
 extern char DEFAULT_PATH;
@@ -35,17 +36,28 @@ static void process(FILE *input_stream)
             break;
         }
 
-        if (strcmp(buffer, "exit\n") == 0)
+        char *buffer_no_ws = firstNonWhitespace(buffer);
+        // skip the round if all empty or whitespace chars
+        if(buffer_no_ws == NULL || *buffer_no_ws == '\0' || *buffer_no_ws == '\n'){
+            continue;
+        }
+
+        //clearWhiteSpaceAtEnd(buffer_no_ws);
+
+        if (strcmp(buffer_no_ws, "exit\n") == 0)
         {
             break;
         }
-        
-        char *dup = strdup(buffer);
+        //printf("buffer: %s\n", buffer);
+        //printf("buffer_no_ws: %s\n", buffer_no_ws);
+        char *dup = strdup(buffer_no_ws);
         setCommand(dup);
         free(dup);
     }
 
-    free(buffer);
+    if(buffer != NULL){
+        free(buffer);
+    }
 }
 
 int main(int argc, char *argv[])

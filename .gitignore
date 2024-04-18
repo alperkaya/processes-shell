@@ -1,2 +1,6 @@
 tests/
 tests-out/
+obj/
+DevNotes
+my_test
+wish

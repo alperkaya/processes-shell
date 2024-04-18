@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "utils.h"
 
@@ -8,6 +9,25 @@ void printPaths(char **path, int num_path){
     for (; i < num_path; i++)
     {
         printf("path #%d : %s\n", i, path[i]);
+    }
+}
+
+char* firstNonWhitespace(const char *str){
+    while(*str && isspace(*str)){
+        str++;
+    }
+
+    return (char*)str;
+}
+
+void clearWhiteSpaceAtEnd(char *str){
+    int length = strlen(str);
+    int i = length - 1;
+
+    while(i >= 0 && isspace(str[i])){
+        printf("str: %s\n",str);
+        str[i] = '\0';
+        i--;
     }
 }
 
