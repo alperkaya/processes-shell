@@ -22,10 +22,9 @@ char* firstNonWhitespace(const char *str){
 
 void clearWhiteSpaceAtEnd(char *str){
     int length = strlen(str);
-    int i = length - 1;
+    int i = length - 2;
 
     while(i >= 0 && isspace(str[i])){
-        printf("str: %s\n",str);
         str[i] = '\0';
         i--;
     }

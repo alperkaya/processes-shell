@@ -42,14 +42,13 @@ static void process(FILE *input_stream)
             continue;
         }
 
-        //clearWhiteSpaceAtEnd(buffer_no_ws);
+        clearWhiteSpaceAtEnd(buffer_no_ws);
 
         if (strcmp(buffer_no_ws, "exit\n") == 0)
         {
             break;
         }
-        //printf("buffer: %s\n", buffer);
-        //printf("buffer_no_ws: %s\n", buffer_no_ws);
+
         char *dup = strdup(buffer_no_ws);
         setCommand(dup);
         free(dup);
