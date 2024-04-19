@@ -15,7 +15,7 @@ static char *cmd_args[MAX_ARG] = {NULL};
 static int num_args = 0;
 extern char custom_cmd[];
 static FILE *user_stdout = NULL;
-int async = 0;
+int sync_flag = 1;
 
 static void forkCommand(char **cmd_args)
 {
@@ -45,10 +45,12 @@ static void forkCommand(char **cmd_args)
     else
     {
         // This is the parent process
-        //printf("async:%d", async);
+        // printf("sync_flag:%d\n", sync_flag);
         // wait for the child to finish
-        //if(async == 1){
-            wait(NULL);
+        if(sync_flag == 1){
+            while (wait(NULL) > 0);
+            // wait(NULL);
+        }
         
     }
 }
@@ -157,7 +159,6 @@ static int setArgsAndRedirection(char *input){
 
 static void resetArgs(){
     // cleanup cmd and arguments
-    //printf("resetArgs\n");
     int i = 0;
     for (; i < num_args; i++)
     {
@@ -168,6 +169,7 @@ static void resetArgs(){
 
     num_args = 0;
     user_stdout = NULL;
+    sync_flag = 1;
 }
 
 void commandCustom(char *input){
