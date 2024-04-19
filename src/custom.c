@@ -50,48 +50,82 @@ static void forkCommand(char **cmd_args)
         //if(async == 1){
             wait(NULL);
         
-
-        
-        // cleanup cmd and arguments
-        int i = 0;
-        for (; i < num_args; i++)
-        {
-            free(cmd_args[i]);
-        }
-
-        num_args = 0;
-        user_stdout = NULL;
     }
 }
 
-// static int setRedirection(char *input){
-//     const char redirection = '>';
-//     char *redirect_char = strpbrk(input, &redirection);
+int tokenizeByGreaterThan(char *str) {
+    int count = 0;
+    
+    // Count the occurrences of '>'
+    int i = 0;
+    for (; str[i] != '\0'; i++) {
+        if (str[i] == '>')
+            count++;
+    }
+    
+    // If there are more than one '>', return failure
+    if (count > 1){
+        fprintf(stderr, "An error has occurred\n");
+        return -1;
+    }
 
-//     if(redirect_char != NULL){
-//         char *input_after_redirect = redirect_char + 1;
-//         if (*input_after_redirect == '\0' || *input_after_redirect == '\n') {
-//             fprintf(stderr, "An error has occurred\n");
-//             return -1;
-//         }
 
-//         char *args = strsep(&input, " ");
-//         trimNewline(args);
+    if(str != NULL){
+        char *out_stream = NULL;
+        out_stream = strdup(str);
+        //printf("out_stream:%s\n", out_stream);
 
-//         // redirection found
-//         return 1;
-//     }
+        if(out_stream != NULL)
+        {
+            user_stdout = fopen(out_stream, "w");
+            free(out_stream);
+        }else{
+            fprintf(stderr, "An error has occurred\n");
+            return -1;
+        }
 
-//     // no redirection
-//     return 0;
-// }
+    }
 
-static int setArguments(char *input){
+
+    return 0; // Success
+}
+
+int setRedirection(char *arg, char *input){
+    int result = 0;
+
+    //printf("setArguments-output:%s\n", input);
+
+    // fail if no input, after >
+    // fail if multiple files given
+    if(input == NULL || strpbrk(input, " ") != NULL){
+        fprintf(stderr, "An error has occurred\n");
+        return -1;
+    }
+
+    input = firstNonWhitespace(input);
+    char *redirect = strdup(input);
+    
+    if(redirect != NULL){
+        // this is weird
+        // if i use input, the output file ends with ?
+        redirect[strlen(redirect)-1] = '\0';
+        result = tokenizeByGreaterThan(redirect);
+        free(redirect);
+    }else{
+        fprintf(stderr, "An error has occurred\n");
+        result = -1;
+    }
+
+    
+
+    return result;
+}
+
+static int setArgsAndRedirection(char *input){
     char *arg = NULL;
-    //int num_args = 2;
-
+    int result = 0;
     while ((arg = strsep(&input, " ")) != NULL && num_args < MAX_ARG)
-    {
+    {           
         if(num_args == MAX_ARG){
             fprintf(stderr, "An error has occurred\n");
             return -1;
@@ -99,51 +133,41 @@ static int setArguments(char *input){
         
         trimNewline(arg);
         
-        // check for redirection
-        const char redirection = '>';
-        char *redirect_char = strpbrk(arg, &redirection);
-        if(redirect_char != NULL){
-            char *input_after_redirect = redirect_char + 1;
-            if (*input_after_redirect == '\0' || *input_after_redirect == '\n') {
-                fprintf(stderr, "An error has occurred\n");
-                return -1;
-            }
 
-            // check if there is argument before >
-            if(redirect_char > arg){
-                
-                // get size
-                // allocate memory
-                char *argument = malloc((redirect_char-arg) * sizeof(char));
-                strncpy(argument, arg, redirect_char-arg);
-                //printf("arg: %s\n", argument);
-
-                cmd_args[num_args] = strdup(argument);
-                num_args++;
-            }
-
-            // check if substring contains another >
-            // then fail
-            char *redirect_char = strpbrk(input_after_redirect, &redirection);
-            if(redirect_char != NULL){
-                fprintf(stderr, "An error has occurred\n");
-                return -1;
-            }
-
-            // get substring after > char
-            // set output stream to substring
-            char *out_stream = malloc(strlen(input_after_redirect) + 1);
-            strcpy(out_stream, input_after_redirect);
-            out_stream[strlen(input_after_redirect)] = '\0';
-            user_stdout = fopen(out_stream, "w");
-
+        // > is in between whitespaces
+        if(*arg == '>'){
+            result = setRedirection(arg, input);
+            break;
         }else{
-            cmd_args[num_args++] = strdup(arg);
-        }
+            
+            char *token = strsep(&arg, ">");
 
+            if(arg != NULL){
+                tokenizeByGreaterThan(arg);
+            }
+
+            cmd_args[num_args++] = strdup(token);
+        }
+        
     }
 
-    return 0;
+    return result;
+}
+
+
+static void resetArgs(){
+    // cleanup cmd and arguments
+    //printf("resetArgs\n");
+    int i = 0;
+    for (; i < num_args; i++)
+    {
+        if(cmd_args[i] != NULL){
+            free(cmd_args[i]);
+        }
+    }
+
+    num_args = 0;
+    user_stdout = NULL;
 }
 
 void commandCustom(char *input){
@@ -156,20 +180,19 @@ void commandCustom(char *input){
         // the second arg is the command itself
         cmd_args[num_args++] = strdup(custom_cmd);
 
-        //result = setRedirection(input);
-
         if(result == 0){
-            result = setArguments(input);
+            result = setArgsAndRedirection(input);
         }
 
         // execute fork
         if(result == 0){
             forkCommand(cmd_args);
         }
+
+        resetArgs();
     }
 
 }
-
 
 
 

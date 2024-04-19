@@ -23,6 +23,7 @@ static void cleanup()
 
 }
 
+
 static void process(FILE *input_stream)
 {
     char *buffer = NULL;
