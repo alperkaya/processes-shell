@@ -8,15 +8,14 @@
 #include "utils.h"
 #include "paths.h"
 #include "commands.h"
+#include "custom.h"
 
 #define MAX_ARG 48
 static char *cmd_args[MAX_ARG] = {NULL};
 static int num_args = 0;
 extern char custom_cmd[];
 static FILE *user_stdout = NULL;
-
-//static char redirection_file[255] = {0};
-
+int async = 0;
 
 static void forkCommand(char **cmd_args)
 {
@@ -46,10 +45,13 @@ static void forkCommand(char **cmd_args)
     else
     {
         // This is the parent process
-
+        //printf("async:%d", async);
         // wait for the child to finish
-        wait(NULL);
+        //if(async == 1){
+            wait(NULL);
+        
 
+        
         // cleanup cmd and arguments
         int i = 0;
         for (; i < num_args; i++)

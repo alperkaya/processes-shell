@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "commands.h"
+#include "parallel.h"
 #include "paths.h"
 #include "utils.h"
 
@@ -36,12 +37,6 @@ static void process(FILE *input_stream)
             break;
         }
 
-        // check for ampersand
-        char *ampersand = strpbrk(buffer, "&");      
-        if(ampersand != NULL){
-            *ampersand = '\0';  
-        }
-
         char *buffer_no_ws = firstNonWhitespace(buffer);
         // skip the round if all empty or whitespace chars
         if(buffer_no_ws == NULL || *buffer_no_ws == '\0' || *buffer_no_ws == '\n'){
@@ -50,14 +45,19 @@ static void process(FILE *input_stream)
 
         trimWhiteSpaceAtEnd(buffer_no_ws);
 
-        if (strcmp(buffer_no_ws, "exit\n") == 0)
-        {
-            break;
-        }
+        if(checkIfParallel(buffer_no_ws)){
+            setParallel(buffer_no_ws);
+        }else{
+            // TODO move exit to commands.c
+            if (strcmp(buffer_no_ws, "exit\n") == 0)
+            {
+                break;
+            }
 
-        char *dup = strdup(buffer_no_ws);
-        setCommand(dup);
-        free(dup);
+            char *dup = strdup(buffer_no_ws);
+            setCommand(dup);
+            free(dup);
+        }
     }
 
     if(buffer != NULL){
