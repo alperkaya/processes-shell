@@ -20,7 +20,7 @@ char* firstNonWhitespace(const char *str){
     return (char*)str;
 }
 
-void clearWhiteSpaceAtEnd(char *str){
+void trimWhiteSpaceAtEnd(char *str){
     int length = strlen(str);
     int i = length - 2;
 

@@ -36,13 +36,19 @@ static void process(FILE *input_stream)
             break;
         }
 
+        // check for ampersand
+        char *ampersand = strpbrk(buffer, "&");      
+        if(ampersand != NULL){
+            *ampersand = '\0';  
+        }
+
         char *buffer_no_ws = firstNonWhitespace(buffer);
         // skip the round if all empty or whitespace chars
         if(buffer_no_ws == NULL || *buffer_no_ws == '\0' || *buffer_no_ws == '\n'){
             continue;
         }
 
-        clearWhiteSpaceAtEnd(buffer_no_ws);
+        trimWhiteSpaceAtEnd(buffer_no_ws);
 
         if (strcmp(buffer_no_ws, "exit\n") == 0)
         {
