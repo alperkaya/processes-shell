@@ -9,13 +9,13 @@
 
 void commandCd(char *input){
     // cd takes only one argument
-    // args = 0 or > 1 is an erro
-    // use chdir to change dir
     char *arg = strsep(&input, " \n");
 
-    if(arg == NULL || strcmp(input, "") != 0){
+    // args = 0 or > 1 is an erro
+    if(arg == NULL || (input != NULL && strlen(input)) > 0){
         fprintf(stderr, "An error has occurred\n");
     }else{
+        // use chdir to change dir
         int r = chdir(arg);
 
         if(r == -1){

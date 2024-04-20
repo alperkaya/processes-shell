@@ -22,7 +22,7 @@ char* firstNonWhitespace(const char *str){
 
 void trimWhiteSpaceAtEnd(char *str){
     int length = strlen(str);
-    int i = length - 2;
+    int i = length - 1;
 
     while(i >= 0 && isspace(str[i])){
         str[i] = '\0';
