@@ -1,0 +1,2 @@
+Test to check that undefined command gives an error
+and built-in command run successfully

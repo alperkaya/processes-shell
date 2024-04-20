@@ -187,8 +187,9 @@ void commandCustom(char *input){
     int result = 0;
 
     // the first arg is the command with path
-    if (appendPath(custom_cmd, &cmd_args[num_args++]) == 0)
-    {
+    if (appendPath(custom_cmd, &cmd_args[num_args]) == 0)
+    {   
+        num_args++;
         // the second arg is the command itself
         cmd_args[num_args++] = strdup(custom_cmd);
 
