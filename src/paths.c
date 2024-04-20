@@ -31,7 +31,7 @@ void freePaths()
     }
 }
 
-void setSearchPath(char *path_list)
+void commandPath(char *path_list)
 {
     char *arg = NULL;
 
@@ -45,12 +45,8 @@ void setSearchPath(char *path_list)
         // increase num of path
         path = (char **) realloc(path, (num_path + 1) * sizeof(char *));
 
-        path[num_path] = malloc(strlen(arg) + 1 + slashExistAtEnd(arg));
-        strcpy(path[num_path], arg);
-
-        if(slashExistAtEnd(arg) == 0){
-            addSlashToEnd(&path[num_path]);
-        }
+        path[num_path] = strdup(arg);
+        addSlashIfNeeded(&path[num_path]);
 
         num_path++;
     }
@@ -100,9 +96,4 @@ int appendPath(char *cmd, char **exec_cmd)
     fprintf(stderr, "An error has occurred\n");
 
     return -1;
-}
-
-
-void commandPath(char *input){
-    setSearchPath(input);
 }

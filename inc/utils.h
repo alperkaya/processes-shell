@@ -7,5 +7,6 @@ extern void addSlashToEnd(char **str);
 extern int slashExistAtEnd(char *str);
 extern char* firstNonWhitespace(const char *str);
 extern void trimWhiteSpaceAtEnd(char *str);
+extern void addSlashIfNeeded(char** strr);
 #endif // UTILS_H
 

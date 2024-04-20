@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -41,21 +42,24 @@ void trimNewline(char *str)
     }
 }
 
-int slashExistAtEnd(char *str){
-    if(str[strlen(str) - 1] == '/'){
-        return 1;
+void addSlashIfNeeded(char** strr) {
+    char *str = *strr;
+    size_t len = strlen(str);
+    
+    // Check if the last character is a slash
+    if (len > 0 && str[len - 1] != '/') {
+        // Allocate memory for the new string with an additional character for the slash
+        char *new_str = (char*) realloc((void*)str, (len + 2) * sizeof(char));
+        if (new_str == NULL) {
+            fprintf(stderr, "Memory reallocation failed.\n");
+        }
+
+        // Update the original pointer to point to the newly allocated memory
+        *strr = new_str;
+
+        // Append a slash to the end of the string
+        new_str[len] = '/';
+        new_str[len + 1] = '\0'; // Ensure proper null-termination
+
     }
-
-    return 0;
-}
-
-void addSlashToEnd(char **str){
-    // add / at the end if user didnt provide
-    char *destination = *str;
-    // Step 2: Calculate the length of the copied string
-    size_t length = strlen(*str);
-    // Step 3: Append the character at the end
-    destination[length] = '/';        
-    // Step 4: Null-terminate the string
-    destination[length + 1] = '\0';
 }

@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 
     input_stream = stdin;
     // default path is /bin/
-    setSearchPath(&DEFAULT_PATH);
+    commandPath(&DEFAULT_PATH);
 
     if (argc == 2)
     {
