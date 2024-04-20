@@ -16,6 +16,7 @@ static int num_args = 0;
 extern char custom_cmd[];
 static FILE *user_stdout = NULL;
 int sync_flag = 1;
+static char *out_stream = NULL;
 
 static void forkCommand(char **cmd_args)
 {
@@ -28,18 +29,26 @@ static void forkCommand(char **cmd_args)
     else if (rc == 0)
     {
         // This is the child process
+        user_stdout = fopen(out_stream, "w");
+        // printf("child process: %s\n", out_stream);
+        free(out_stream);
+
         if(user_stdout != NULL){
             if(dup2(fileno(user_stdout), STDOUT_FILENO) == -1){
                 fprintf(stderr, "An error has occurred\n");
                 exit(EXIT_FAILURE);
             }
 
-            fclose(user_stdout);
         }
 
         if(execv(cmd_args[0], (cmd_args+1)) == -1){
             fprintf(stderr, "An error has occurred3\n");
         }
+
+        if(user_stdout != NULL){
+            //fclose(user_stdout);
+        }
+
         _exit(0);
     }
     else
@@ -73,15 +82,12 @@ int tokenizeByGreaterThan(char *str) {
 
 
     if(str != NULL){
-        char *out_stream = NULL;
+        // printf("str %s\n", str);
         out_stream = strdup(str);
         //printf("out_stream:%s\n", out_stream);
 
-        if(out_stream != NULL)
+        if(out_stream == NULL)
         {
-            user_stdout = fopen(out_stream, "w");
-            free(out_stream);
-        }else{
             fprintf(stderr, "An error has occurred\n");
             return -1;
         }
@@ -110,7 +116,7 @@ int setRedirection(char *arg, char *input){
     if(redirect != NULL){
         // this is weird
         // if i use input, the output file ends with ?
-        redirect[strlen(redirect)-1] = '\0';
+        redirect[strlen(redirect)] = '\0';
         result = tokenizeByGreaterThan(redirect);
         free(redirect);
     }else{
@@ -167,8 +173,12 @@ static void resetArgs(){
         }
     }
 
+    if(out_stream != NULL){
+        free(out_stream);
+        out_stream = NULL;
+    }
+
     num_args = 0;
-    user_stdout = NULL;
     sync_flag = 1;
 }
 

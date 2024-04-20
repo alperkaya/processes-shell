@@ -19,7 +19,7 @@ void setCommand(char *input)
 
     if (cmd != NULL)
     {
-        if (strcmp(cmd, "path") == 0)
+        if (strcmp(cmd, "path") == 0 || strcmp(cmd, "./path" ) == 0)
         {
             selectedCommand = commandPath;
         }
