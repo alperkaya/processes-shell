@@ -20,48 +20,32 @@ int checkIfParallel(const char* input){
 }
 
 void setParallel(char *input) {
-    char *command = NULL;
-    char *command_no_ws = firstNonWhitespace(input);
-    trimWhiteSpaceAtEnd(command_no_ws);
+    char *parallel_cmds = firstNonWhitespace(input);
+    trimWhiteSpaceAtEnd(parallel_cmds);
 
-    // TODO refactor code duplication
-    int length = strlen(input);
-    int i = length - 1;
-
-    while (i >= 0 && isspace(command_no_ws[i])) {
-        command_no_ws[i] = '\0';
-        i--;
-    }
-
-    char *last_ampersand = strrchr(input, '&'); // Find the last occurrence of '&'
-
+    // Find the last occurrence of '&'
+    char *last_ampersand = strrchr(parallel_cmds, '&'); 
+    
     sync_flag = 0;
 
-    command = strtok(input, "&\n");
+    char *token = NULL;
+    token = strtok(parallel_cmds, "&\n");
 
-    while (command != NULL) {
-        // printf("command: %d, len:%d\n", command, strlen(command));
-        // printf("last_ampersand: %d\n", last_ampersand);
-        if(last_ampersand == command + strlen(command)){
+    while (token != NULL) {
+        trimWhiteSpaceAtEnd(token);
+        char *parallel_cmds = firstNonWhitespace(token);
+        // printf("token: %s\n", token);
+        // printf("parallel_cmds: %s\n", parallel_cmds);
+
+        if(last_ampersand == token + strlen(token)){
             sync_flag = 1;
         }
 
-        char *command_no_ws = firstNonWhitespace(command);
-
-        int length = strlen(command_no_ws);
-        int i = length - 1;
-
-        while (i >= 0 && isspace(command_no_ws[i])) {
-            command_no_ws[i] = '\0';
-            i--;
-        }
-        
-        
-        char *dup = strdup(command_no_ws);
+        char *dup = strdup(parallel_cmds);
         setCommand(dup);
         free(dup);
 
-        command = strtok(NULL, "&\n");
+        token = strtok(NULL, "&\n");
     }
 
 }
