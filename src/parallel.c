@@ -5,7 +5,6 @@
 
 #include "parallel.h"
 #include "utils.h"
-#include "custom.h"
 #include "commands.h"
 
 extern int sync_flag;
@@ -33,15 +32,13 @@ void setParallel(char *input) {
 
     while (token != NULL) {
         trimWhiteSpaceAtEnd(token);
-        char *parallel_cmds = firstNonWhitespace(token);
-        // printf("token: %s\n", token);
-        // printf("parallel_cmds: %s\n", parallel_cmds);
+        token = firstNonWhitespace(token);
 
         if(last_ampersand == token + strlen(token)){
             sync_flag = 1;
         }
-
-        char *dup = strdup(parallel_cmds);
+        
+        char *dup = strdup(token);
         setCommand(dup);
         free(dup);
 
